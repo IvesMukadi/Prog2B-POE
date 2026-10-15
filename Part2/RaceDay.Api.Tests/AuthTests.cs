@@ -79,4 +79,58 @@ public class AuthTests : IDisposable
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Login_WithCorrectDetails_ReturnsOk()
+    {
+        var response = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = TestHelper.Organiser1,
+            password = TestHelper.Password
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_WithWrongPassword_ReturnsUnauthorized()
+    {
+        var response = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = TestHelper.Organiser1,
+            password = "wrong-password"
+        });
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_WithUnknownEmail_ReturnsUnauthorized()
+    {
+        var response = await _client.PostAsJsonAsync("/api/auth/login", new
+        {
+            email = "nobody@example.com",
+            password = TestHelper.Password
+        });
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Logout_WhenLoggedIn_ReturnsOk()
+    {
+        await TestHelper.LoginAs(_client, TestHelper.Participant1);
+
+        var response = await _client.PostAsync("/api/auth/logout", null);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Logout_WhenNotLoggedIn_ReturnsUnauthorized()
+    {
+        var response = await _client.PostAsync("/api/auth/logout", null);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
 }
