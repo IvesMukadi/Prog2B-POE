@@ -18,6 +18,12 @@ public class RaceDayContext : DbContext
     public DbSet<EventStatus> EventStatuses => Set<EventStatus>();
     public DbSet<EnrolmentStatus> EnrolmentStatuses => Set<EnrolmentStatus>();
 
+    // The SQL script uses varchar, so strings are not unicode
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<string>().AreUnicode(false);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>(e =>
