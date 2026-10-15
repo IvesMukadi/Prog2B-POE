@@ -14,7 +14,7 @@ Organiser: can create, edit and delete events, manage event categories, view all
 Participant: can create an account, browse events, enrol in an event by choosing a category, view their own enrolments and track their personal results.
 
 Part 1 Details
-Part 1 covers planning only. No API code has been written yet.
+Part 1 covers planning only. The API was built afterwards in Part 2.
 
 Files in Part1/docs:
 
@@ -42,6 +42,40 @@ Seed passwords are placeholders (hashed_pass_1 and so on). Real hashing is done 
 
 Part 2 Details
 Part 2 is a RESTful API built with ASP.NET Core Web API on .NET 8, Entity Framework Core (Code-First) and SQL Server. The code is in Part2/RaceDay.Api and the unit tests are in Part2/RaceDay.Api.Tests.
+
+Project structure
+Part2/RaceDay.Api/Controllers - one controller for each area (Auth, Users, Events, Categories, Enrolments and Results)
+Part2/RaceDay.Api/Models - one class for each database table
+Part2/RaceDay.Api/Data - RaceDayContext (the database connection and relationships) and SeedData (the sample data)
+Part2/RaceDay.Api/Dtos - the shapes of the requests and responses, so passwords and extra fields are never sent out
+Part2/RaceDay.Api/Helpers - a small helper that reads the logged in user's id from the session cookie
+Part2/RaceDay.Api/Migrations - the EF Core migration that creates the database
+Part2/RaceDay.Api.Tests - the unit tests (91 tests)
+.github/workflows - docs-check.yml (checks the Part 1 files) and ci.yml (builds the API and runs the tests)
+
+API endpoints
+POST /api/auth/register - anyone
+POST /api/auth/login - anyone
+POST /api/auth/logout - logged in users
+GET /api/users/me - logged in users
+PUT /api/users/me - logged in users
+GET /api/events - anyone (optional filters: type, status, date)
+GET /api/events/{id} - anyone
+GET /api/events/mine - Organiser
+POST /api/events - Organiser
+PUT /api/events/{id} - Organiser (own events only)
+DELETE /api/events/{id} - Organiser (own events only)
+GET /api/events/{eventId}/categories - anyone
+POST /api/events/{eventId}/categories - Organiser (own events only)
+PUT /api/categories/{id} - Organiser (own events only)
+DELETE /api/categories/{id} - Organiser (own events only)
+POST /api/events/{eventId}/enrol - Participant
+GET /api/users/me/enrolments - Participant
+GET /api/events/{eventId}/enrolments - Organiser (own events only)
+PUT /api/enrolments/{id}/status - Organiser (own events only)
+POST /api/events/{eventId}/results - Organiser (own events only)
+GET /api/users/me/results - Participant
+GET /api/events/{eventId}/results - Organiser (own events only)
 
 How the roles work in the API
 The API checks the role on every endpoint. A logged out user gets 401 on protected endpoints. A Participant gets 403 on Organiser endpoints, and an Organiser gets 403 on Participant endpoints. An Organiser can only change events, categories, enrolments and results that belong to their own events.
