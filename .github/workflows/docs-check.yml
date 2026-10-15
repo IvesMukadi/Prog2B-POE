@@ -1,0 +1,23 @@
+name: Docs check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check docs folder exists
+        run: test -d Part1/docs
+
+      - name: Check ERD image
+        run: test -f Part1/docs/ERD.png
+
+      - name: Check API endpoint plan
+        run: test -f Part1/docs/API_Endpoint_Plan.pdf
+
+      - name: Check SQL script
+        run: test -f Part1/docs/raceday_setup.sql
