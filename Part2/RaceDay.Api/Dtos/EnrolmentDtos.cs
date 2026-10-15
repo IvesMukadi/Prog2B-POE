@@ -5,12 +5,15 @@ namespace RaceDay.Api.Dtos;
 
 public class EnrolDto
 {
+    /// <example>1</example>
     [Range(1, int.MaxValue)]
     public int CategoryId { get; set; }
 }
 
 public class StatusDto
 {
+    // 1 Pending, 2 Confirmed, 3 Cancelled, 4 Completed, 5 Waitlisted
+    /// <example>2</example>
     [Range(1, int.MaxValue)]
     public int StatusId { get; set; }
 }

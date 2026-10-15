@@ -5,12 +5,15 @@ namespace RaceDay.Api.Dtos;
 
 public class CreateResultDto
 {
+    /// <example>3</example>
     [Range(1, int.MaxValue)]
     public int EnrolmentId { get; set; }
 
     // Sent as text like "02:05:40"
+    /// <example>02:05:40</example>
     public TimeSpan FinishTime { get; set; }
 
+    /// <example>34</example>
     [Range(1, int.MaxValue)]
     public int FinishingPosition { get; set; }
 }

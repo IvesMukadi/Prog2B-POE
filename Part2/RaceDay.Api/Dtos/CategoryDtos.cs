@@ -6,9 +6,11 @@ namespace RaceDay.Api.Dtos;
 // Used to add or update a category
 public class SaveCategoryDto
 {
+    /// <example>Under 20</example>
     [Required, MaxLength(100)]
     public string CategoryName { get; set; } = "";
 
+    /// <example>15-19</example>
     [MaxLength(50)]
     public string? AgeGroup { get; set; }
 }

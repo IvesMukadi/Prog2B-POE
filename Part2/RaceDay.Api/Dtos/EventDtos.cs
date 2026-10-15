@@ -5,22 +5,28 @@ namespace RaceDay.Api.Dtos;
 
 public class CreateEventDto
 {
+    /// <example>Soweto 10km</example>
     [Required, MaxLength(100)]
     public string Name { get; set; } = "";
 
+    /// <example>A fun run through Soweto</example>
     [Required, MaxLength(500)]
     public string Description { get; set; } = "";
 
+    /// <example>2027-03-20T07:00:00</example>
     [Range(typeof(DateTime), "2000-01-01", "2100-12-31")]
     public DateTime Date { get; set; }
 
+    /// <example>Orlando Stadium, Soweto</example>
     [Required, MaxLength(200)]
     public string Location { get; set; } = "";
 
     // Distance is in kilometres
+    /// <example>10</example>
     [Range(0.01, 1000)]
     public decimal Distance { get; set; }
 
+    /// <example>1</example>
     [Range(1, int.MaxValue)]
     public int EventTypeId { get; set; }
 }
@@ -28,6 +34,7 @@ public class CreateEventDto
 // An update is the same as a create plus the event status
 public class UpdateEventDto : CreateEventDto
 {
+    /// <example>2</example>
     [Range(1, int.MaxValue)]
     public int EventStatusId { get; set; }
 }
