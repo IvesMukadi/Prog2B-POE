@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.Api.Models;
 
+// Links a participant to an event and the category they picked
 [Table("Enrolments")]
 public class Enrolment
 {
@@ -19,6 +20,7 @@ public class Enrolment
     [Column("CATEGORY_ID")]
     public int CategoryId { get; set; }
 
+    // 1 means Pending, a new enrolment starts as Pending
     [Column("STATUS_ID")]
     public int StatusId { get; set; } = 1;
 

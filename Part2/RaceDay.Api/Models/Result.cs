@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.Api.Models;
 
+// The finish time and position of one enrolment
 [Table("Results")]
 public class Result
 {

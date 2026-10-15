@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.Api.Models;
 
+// Lookup table, for example Run, Walk or Cycle
 [Table("Event_Types")]
 public class EventType
 {

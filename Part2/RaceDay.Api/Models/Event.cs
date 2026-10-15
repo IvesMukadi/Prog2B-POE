@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.Api.Models;
 
+// A race created by an Organiser
 [Table("Events")]
 public class Event
 {
@@ -16,6 +17,7 @@ public class Event
     [Column("TYPE_ID")]
     public int TypeId { get; set; }
 
+    // 2 means Open, a new event starts as Open
     [Column("EVENT_STATUS_ID")]
     public int EventStatusId { get; set; } = 2;
 
@@ -34,13 +36,16 @@ public class Event
     [MaxLength(200)]
     public string Location { get; set; } = "";
 
+    // In kilometres
     [Column("DISTANCE", TypeName = "decimal(10,2)")]
     public decimal Distance { get; set; }
 
+    // Link to the banner image in Azure Blob Storage (used in Part 3)
     [Column("BANNER_URL")]
     [MaxLength(500)]
     public string? BannerUrl { get; set; }
 
+    // Related rows, filled in when we use Include
     public User? Organiser { get; set; }
     public EventType? EventType { get; set; }
     public EventStatus? EventStatus { get; set; }

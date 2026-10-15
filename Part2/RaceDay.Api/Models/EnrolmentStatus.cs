@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.Api.Models;
 
+// Lookup table, for example Pending, Confirmed or Cancelled
 [Table("Enrolment_Status")]
 public class EnrolmentStatus
 {

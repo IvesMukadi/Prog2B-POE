@@ -9,6 +9,7 @@ public class RaceDayContext : DbContext
     {
     }
 
+    // One DbSet for each table in the database
     public DbSet<User> Users => Set<User>();
     public DbSet<Event> Events => Set<Event>();
     public DbSet<Category> Categories => Set<Category>();
@@ -26,16 +27,19 @@ public class RaceDayContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Email must be unique and the role can only be one of the two roles
         modelBuilder.Entity<User>(e =>
         {
             e.HasIndex(u => u.Email).IsUnique();
             e.ToTable("Users", t => t.HasCheckConstraint("CK_Users_ROLE", "[ROLE] in ('Organiser', 'Participant')"));
         });
 
+        // Names in the lookup tables must be unique
         modelBuilder.Entity<EventType>().HasIndex(t => t.TypeName).IsUnique();
         modelBuilder.Entity<EventStatus>().HasIndex(s => s.StatusName).IsUnique();
         modelBuilder.Entity<EnrolmentStatus>().HasIndex(s => s.StatusName).IsUnique();
 
+        // An organiser, type or status that is used by an event cannot be deleted
         modelBuilder.Entity<Event>(e =>
         {
             e.Property(x => x.EventStatusId).HasDefaultValue(2);
@@ -44,12 +48,14 @@ public class RaceDayContext : DbContext
             e.HasOne(x => x.EventStatus).WithMany().HasForeignKey(x => x.EventStatusId).OnDelete(DeleteBehavior.NoAction);
         });
 
+        // Category names are unique inside one event, and deleting an event deletes its categories
         modelBuilder.Entity<Category>(e =>
         {
             e.HasIndex(c => new { c.EventId, c.CategoryName }).IsUnique();
             e.HasOne(c => c.Event).WithMany(ev => ev.Categories).HasForeignKey(c => c.EventId).OnDelete(DeleteBehavior.Cascade);
         });
 
+        // Deleting an event deletes its enrolments, but a user or category with enrolments cannot be deleted
         modelBuilder.Entity<Enrolment>(e =>
         {
             e.Property(x => x.StatusId).HasDefaultValue(1);
@@ -59,6 +65,7 @@ public class RaceDayContext : DbContext
             e.HasOne(x => x.Status).WithMany().HasForeignKey(x => x.StatusId).OnDelete(DeleteBehavior.NoAction);
         });
 
+        // Deleting an enrolment deletes its results
         modelBuilder.Entity<Result>(e =>
         {
             e.HasOne(r => r.Enrolment).WithMany(en => en.Results).HasForeignKey(r => r.EnrolmentId).OnDelete(DeleteBehavior.Cascade);

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay.Api.Models;
 
+// A group inside an event that a participant can enter, like Elite Men
 [Table("Categories")]
 public class Category
 {
