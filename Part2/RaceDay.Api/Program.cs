@@ -10,6 +10,13 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+// Fill the database with sample data when the app starts
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<RaceDayContext>();
+    SeedData.Initialize(db);
+}
+
 app.MapControllers();
 
 app.Run();
