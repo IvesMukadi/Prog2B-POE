@@ -3,7 +3,10 @@
 -- Note: Passwords are hashed in the API layer (Part 2), not stored plaintext here
 
 create database RaceDay;
+go
+
 Use RaceDay;
+go
 
 -- Lookup tables for status management
 create table Event_Status (
@@ -28,7 +31,8 @@ create table Users (
     PASSWORD varchar(255) not null,
     FIRST_NAME varchar(50) not null,
     LAST_NAME varchar(50) not null,
-    ROLE varchar(20) not null check (ROLE in ('Organiser', 'Participant'))
+    ROLE varchar(20) not null check (ROLE in ('Organiser', 'Participant')),
+    PROFILE_PICTURE_URL varchar(500) null
 );
 
 -- Events created and managed by organisers
@@ -42,6 +46,7 @@ create table Events (
     EVENT_DATE datetime not null,
     LOCATION varchar(200) not null,
     DISTANCE decimal(10,2) not null,
+    BANNER_URL varchar(500) null,
     foreign key (USER_ID) references Users(USER_ID),
     foreign key (TYPE_ID) references Event_Types(TYPE_ID),
     foreign key (EVENT_STATUS_ID) references Event_Status(EVENT_STATUS_ID)

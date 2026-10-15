@@ -37,6 +37,7 @@ Some foreign keys use ON DELETE CASCADE (Categories to Events, Enrolments to Eve
 Categories has a UNIQUE constraint on (EVENT_ID, CATEGORY_NAME) so an event cannot have two categories with the same name.
 Events.EVENT_STATUS_ID and Enrolments.STATUS_ID are NOT NULL with defaults (2 and 1). The ERD does not show this.
 The primary key of Event_Status is named EVENT_STATUS_ID in the SQL script. The ERD calls it STATUS_ID.
+Users has an extra nullable PROFILE_PICTURE_URL column and Events has an extra nullable BANNER_URL column. They hold the Azure Blob Storage links for profile pictures and event banners (needed in Part 3). The ERD does not show them.
 Seed passwords are placeholders (hashed_pass_1 and so on). Real hashing will be done in the API in Part 2.
 
 
