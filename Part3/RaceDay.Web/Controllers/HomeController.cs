@@ -54,6 +54,17 @@ public class HomeController : BaseController
         {
             return Fail(result, "Index", "Home");
         }
+
+        // A logged in participant who already enrolled sees their status instead of the form
+        if (HttpContext.Session.GetString("Role") == "Participant")
+        {
+            var mine = await _api.GetMyEnrolmentsAsync();
+            if (mine.Success)
+            {
+                ViewBag.MyEnrolment = mine.Data!.FirstOrDefault(e => e.EventId == id);
+            }
+        }
+
         return View(result.Data);
     }
 

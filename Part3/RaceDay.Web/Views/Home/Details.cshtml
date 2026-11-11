@@ -1,5 +1,6 @@
 @model RaceDay.Web.Models.EventInfo
 @{
+    var enrolment = ViewBag.MyEnrolment as RaceDay.Web.Models.EnrolmentInfo;
     ViewData["Title"] = Model.Name;
     var role = Context.Session.GetString("Role");
     var banner = string.IsNullOrEmpty(Model.BannerUrl) ? Url.Content("~/images/event-default.jpg") : Model.BannerUrl;
@@ -26,6 +27,12 @@
                 @if (Model.Categories == null || Model.Categories.Count == 0)
                 {
                     <p class="mb-0">No categories have been added to this event yet.</p>
+                }
+                else if (role == "Participant" && enrolment != null)
+                {
+                    <p class="mb-2">You are enrolled in <strong>@enrolment.CategoryName</strong>.</p>
+                    <p><partial name="_StatusBadge" model="enrolment.StatusName" /></p>
+                    <a class="btn btn-rd w-100" asp-controller="Participant" asp-action="MyEvents">View my events</a>
                 }
                 else if (role == "Participant" && Model.EventStatusId == 2)
                 {

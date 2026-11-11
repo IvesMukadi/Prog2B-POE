@@ -41,6 +41,13 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/Home/Error");
 
 app.UseStaticFiles();
+
+// Pages change with the login state, so the browser must not show an old copy on Back
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.CacheControl = "no-store";
+    await next();
+});
 app.UseRouting();
 app.UseSession();
 app.UseAuthorization();
