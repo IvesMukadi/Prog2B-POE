@@ -1,22 +1,317 @@
-html {
-  font-size: 14px;
-}
+/* RaceDay theme: navy header, cream paper page, deep orange accent, race bib details */
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+:root {
+    --navy: #0f1b33;
+    --navy-light: #1b2c4f;
+    --orange: #d9480f;
+    --orange-dark: #b53a0a;
+    --cream: #fff7e6;
+    --paper: #fffdf8;
+    --yellow: #ffd166;
+    --ink: #1a1a1a;
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: 'Barlow', sans-serif;
+    color: var(--ink);
+    background-color: var(--cream);
+    /* A faint paper grain made with an inline SVG */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Headings are bold italic capitals */
+h1, h2, h3, h4, .rd-heading {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+}
+
+/* Small spaced label above a heading */
+.rd-label {
+    color: var(--orange);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ---------- Navbar ---------- */
+
+.rd-nav {
+    background: var(--navy);
+    border-bottom: 4px solid var(--orange);
+}
+.rd-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.9rem;
+    color: #fff;
+}
+.rd-logo span { color: var(--orange); }
+.rd-logo:hover { color: #fff; }
+.rd-nav .nav-link { color: #c9d1e3; font-weight: 500; }
+.rd-nav .nav-link:hover, .rd-nav .nav-link:focus { color: #fff; }
+
+.rd-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--orange);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn-rd {
+    background: var(--orange);
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.55rem 1.3rem;
+    transition: background 0.15s, transform 0.15s;
+}
+.btn-rd:hover, .btn-rd:focus { background: var(--orange-dark); color: #fff; transform: translateY(-1px); }
+
+.btn-outline-rd {
+    border: 2px solid var(--orange);
+    border-radius: 0;
+    color: var(--orange);
+    background: transparent;
+    font-weight: 600;
+}
+.btn-outline-rd:hover { background: var(--orange); color: #fff; }
+
+/* ---------- Race bib: a white tag with a navy border and pin holes ---------- */
+
+.rd-bib {
+    position: relative;
+    display: inline-block;
+    background: #fff;
+    border: 3px solid var(--navy);
+    padding: 0.5rem 1.1rem;
+    color: var(--navy);
+}
+.rd-bib::before, .rd-bib::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 1px solid var(--navy);
+}
+.rd-bib::before { left: 5px; }
+.rd-bib::after { right: 5px; }
+
+.rd-bib-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+/* ---------- Hero ---------- */
+
+.rd-hero {
+    min-height: 540px;
+    /* The navy fades from the left so the headline is easy to read */
+    background:
+        linear-gradient(100deg, rgba(15, 27, 51, 0.92) 0%, rgba(15, 27, 51, 0.55) 55%, rgba(15, 27, 51, 0.25) 100%),
+        url('../images/hero.jpg') center / cover,
+        var(--navy);
+    color: #fff;
+    display: flex;
+    align-items: flex-end;
+    padding: 4rem 0;
+}
+.rd-hero h1 {
+    font-size: clamp(2.8rem, 8vw, 6rem);
+    line-height: 0.95;
+    margin-bottom: 1rem;
+}
+.rd-hero .rd-meta {
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+/* Short orange bar before the date line */
+.rd-hero .rd-meta::before {
+    content: '';
+    display: inline-block;
+    width: 44px;
+    height: 4px;
+    background: var(--orange);
+    margin-right: 0.8rem;
+    vertical-align: middle;
+}
+
+/* ---------- Countdown ---------- */
+
+.rd-countdown {
+    background: var(--yellow);
+    padding: 2rem 1rem;
+    text-align: center;
+    border-top: 6px solid var(--navy);
+}
+.rd-count-box {
+    display: inline-block;
+    min-width: 96px;
+    margin: 0.4rem;
+}
+.rd-count-box .rd-bib-number { display: block; font-size: 2.8rem; padding: 0.2rem 0; }
+.rd-count-box .unit {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* ---------- Event cards ---------- */
+
+.rd-card {
+    background: var(--paper);
+    border: 0;
+    border-top: 4px solid transparent;
+    border-radius: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.rd-card:hover {
+    transform: translateY(-4px);
+    border-top-color: var(--orange);
+    box-shadow: 0 10px 24px rgba(15, 27, 51, 0.15);
+}
+.rd-card .rd-card-img { overflow: hidden; }
+.rd-card img { height: 200px; object-fit: cover; width: 100%; transition: transform 0.4s; }
+.rd-card:hover img { transform: scale(1.05); }
+.rd-card .card-body { flex: 1; }
+
+.rd-type {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.8rem;
+    color: #d38f00;
+    text-transform: uppercase;
+    line-height: 1.1;
+}
+.rd-stat {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.3rem;
+    text-transform: uppercase;
+}
+
+/* ---------- Enrolment status badges (a dot as well as a colour) ---------- */
+
+.rd-badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #fff;
+}
+.rd-badge::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    margin-right: 0.45rem;
+}
+.rd-badge-confirmed { background: #2b8a3e; }
+.rd-badge-pending { background: #f59f00; color: #1a1a1a; }
+.rd-badge-cancelled { background: #6c757d; }
+.rd-badge-completed { background: #1c7ed6; }
+.rd-badge-waitlisted { background: #6741d9; }
+
+/* ---------- Panels, tables, forms ---------- */
+
+.rd-panel { background: var(--paper); padding: 1.5rem; border-left: 4px solid var(--navy); }
+.table { background: var(--paper); }
+.table thead th {
+    background: var(--navy);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    border: 0;
+}
+.form-control, .form-select { border-radius: 0; }
+.form-control:focus, .form-select:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 0.2rem rgba(217, 72, 15, 0.2);
+}
+
+/* Stat cards on the dashboard */
+.rd-stat-card { background: var(--navy); color: #fff; padding: 1.5rem; border-bottom: 4px solid var(--orange); }
+.rd-stat-card .num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 3.2rem;
+    line-height: 1.1;
+    color: var(--yellow);
+}
+
+/* ---------- Footer ---------- */
+
+/* A checkered finish line strip */
+.rd-finish {
+    height: 16px;
+    margin-top: 4rem;
+    background: repeating-conic-gradient(var(--navy) 0 25%, #fff 0 50%) 0 0 / 16px 16px;
+}
+.rd-footer { background: #0a0f1c; color: #aeb6c8; padding: 3rem 0 1.5rem; }
+.rd-footer a { color: #aeb6c8; text-decoration: none; }
+.rd-footer a:hover { color: #fff; }
+.rd-footer h5 { color: #fff; }
+
+/* ---------- Page load: things rise in one after another ---------- */
+
+@keyframes rd-rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+}
+.rd-rise {
+    opacity: 0;
+    animation: rd-rise 0.6s ease-out forwards;
+    /* Each element sets --i to 1, 2, 3 and so on to start a little later */
+    animation-delay: calc(var(--i, 0) * 0.08s);
+}
+
+/* People who prefer less motion get no animation */
+@media (prefers-reduced-motion: reduce) {
+    .rd-rise { animation: none; opacity: 1; }
+    .rd-card, .rd-card img, .btn-rd { transition: none; }
+    .rd-card:hover, .rd-card:hover img, .btn-rd:hover { transform: none; }
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 576px) {
+    .rd-countdown { padding: 1.5rem 0.25rem; }
+    .rd-count-box { min-width: 0; margin: 0.15rem; }
+    .rd-count-box .rd-bib { padding: 0.4rem 0.5rem; }
+    .rd-count-box .rd-bib-number { font-size: 1.7rem; }
+    /* The bibs are too small for pin holes on a phone */
+    .rd-count-box .rd-bib::before, .rd-count-box .rd-bib::after { display: none; }
+    .rd-count-box .unit { font-size: 0.65rem; letter-spacing: 0.06em; }
+    .rd-hero { min-height: 440px; padding: 3rem 0; }
 }
