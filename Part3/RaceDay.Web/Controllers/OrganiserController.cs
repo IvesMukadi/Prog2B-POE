@@ -233,4 +233,37 @@ public class OrganiserController : BaseController
         TempData["Success"] = "Category deleted.";
         return RedirectToAction("Categories", new { id = eventId });
     }
+
+    public async Task<IActionResult> Enrolments(int id)
+    {
+        var ev = await _api.GetEventAsync(id);
+        if (!ev.Success)
+        {
+            return Fail(ev, "Events", "Organiser");
+        }
+
+        var enrolments = await _api.GetEventEnrolmentsAsync(id);
+        if (!enrolments.Success)
+        {
+            // For example 403 when the event belongs to someone else
+            return Fail(enrolments, "Events", "Organiser");
+        }
+
+        ViewBag.Event = ev.Data;
+        return View(enrolments.Data!.OrderBy(e => e.ParticipantName).ToList());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangeStatus(int enrolmentId, int eventId, int statusId)
+    {
+        var result = await _api.UpdateEnrolmentStatusAsync(enrolmentId, statusId);
+        if (!result.Success)
+        {
+            return Fail(result, "Events", "Organiser");
+        }
+
+        TempData["Success"] = "Status updated.";
+        return RedirectToAction("Enrolments", new { id = eventId });
+    }
 }
