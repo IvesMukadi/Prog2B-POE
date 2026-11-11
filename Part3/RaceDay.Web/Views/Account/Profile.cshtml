@@ -1,0 +1,56 @@
+@model RaceDay.Web.Models.ProfileForm
+@{
+    ViewData["Title"] = "Profile";
+    string? picture = ViewBag.Picture;
+}
+<div class="container py-4">
+    <p class="rd-label">@ViewBag.Role</p>
+    <h1 class="mb-4">Your profile</h1>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="rd-panel text-center">
+                @if (string.IsNullOrEmpty(picture))
+                {
+                    <div class="rd-stat-card mb-3"><div class="num">@Model.FirstName.Substring(0, 1)@Model.LastName.Substring(0, 1)</div></div>
+                }
+                else
+                {
+                    <img src="@picture" class="img-fluid mb-3" alt="Your profile picture" style="max-height: 240px; object-fit: cover;" />
+                }
+                <form asp-action="Picture" method="post" enctype="multipart/form-data">
+                    <label for="file" class="form-label">Upload a new picture (jpg or png, up to 2 MB)</label>
+                    <input type="file" id="file" name="file" accept="image/png, image/jpeg" class="form-control mb-3" />
+                    <button type="submit" class="btn btn-rd w-100">Upload picture</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="rd-panel">
+                <form asp-action="Profile" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-rd">Save changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

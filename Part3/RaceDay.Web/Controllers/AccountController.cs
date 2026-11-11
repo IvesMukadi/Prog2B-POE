@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using RaceDay.Web.Filters;
 using RaceDay.Web.Models;
 using RaceDay.Web.Services;
 
@@ -95,6 +96,77 @@ public class AccountController : BaseController
         HttpContext.Session.Clear();
         TempData["Success"] = "You have been logged out.";
         return RedirectToAction("Login");
+    }
+
+    [RoleRequired("Organiser", "Participant")]
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        var result = await _api.GetMeAsync();
+        if (!result.Success)
+        {
+            return Fail(result, "Index", "Home");
+        }
+
+        var user = result.Data!;
+        ViewBag.Picture = user.ProfilePictureUrl;
+        ViewBag.Role = user.Role;
+        return View(new ProfileForm { FirstName = user.FirstName, LastName = user.LastName, Email = user.Email });
+    }
+
+    [RoleRequired("Organiser", "Participant")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Profile(ProfileForm form)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(form);
+        }
+
+        var result = await _api.UpdateMeAsync(form);
+        if (!result.Success)
+        {
+            if (IsSessionOrServerProblem(result))
+            {
+                return Fail(result, "Profile", "Account");
+            }
+            ModelState.AddModelError("", result.Message);
+            return View(form);
+        }
+
+        // Update the name in the navbar
+        SaveUser(result.Data!);
+        TempData["Success"] = "Your details were saved.";
+        return RedirectToAction("Profile");
+    }
+
+    [RoleRequired("Organiser", "Participant")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Picture(IFormFile? file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            TempData["Error"] = "Please choose an image first.";
+            return RedirectToAction("Profile");
+        }
+
+        var result = await _api.UploadPictureAsync(file);
+        if (!result.Success)
+        {
+            if (IsSessionOrServerProblem(result))
+            {
+                return Fail(result, "Profile", "Account");
+            }
+            // For example "Only jpg and png images are allowed."
+            TempData["Error"] = result.Message;
+            return RedirectToAction("Profile");
+        }
+
+        SaveUser(result.Data!);
+        TempData["Success"] = "Your picture was updated.";
+        return RedirectToAction("Profile");
     }
 
     public IActionResult Denied()
