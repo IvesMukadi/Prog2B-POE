@@ -156,4 +156,81 @@ public class OrganiserController : BaseController
         TempData["Success"] = "Event deleted.";
         return RedirectToAction("Events");
     }
+
+    public async Task<IActionResult> Categories(int id)
+    {
+        var result = await _api.GetEventAsync(id);
+        if (!result.Success)
+        {
+            return Fail(result, "Events", "Organiser");
+        }
+
+        ViewBag.Event = result.Data;
+        return View(new CategoryForm { EventId = id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddCategory(CategoryForm form)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = "Please enter a category name.";
+            return RedirectToAction("Categories", new { id = form.EventId });
+        }
+
+        var result = await _api.CreateCategoryAsync(form.EventId, form);
+        if (!result.Success)
+        {
+            return Fail(result, "Categories", "Organiser");
+        }
+
+        TempData["Success"] = "Category added.";
+        return RedirectToAction("Categories", new { id = form.EventId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditCategory(CategoryForm form)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = "Please enter a category name.";
+            return RedirectToAction("Categories", new { id = form.EventId });
+        }
+
+        var result = await _api.UpdateCategoryAsync(form.CategoryId, form);
+        if (!result.Success)
+        {
+            if (IsSessionOrServerProblem(result))
+            {
+                return Fail(result, "Events", "Organiser");
+            }
+            TempData["Error"] = result.Message;
+            return RedirectToAction("Categories", new { id = form.EventId });
+        }
+
+        TempData["Success"] = "Category saved.";
+        return RedirectToAction("Categories", new { id = form.EventId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteCategory(int categoryId, int eventId)
+    {
+        var result = await _api.DeleteCategoryAsync(categoryId);
+        if (!result.Success)
+        {
+            // The API refuses when people are enrolled, and the message says so
+            if (IsSessionOrServerProblem(result))
+            {
+                return Fail(result, "Events", "Organiser");
+            }
+            TempData["Error"] = result.Message;
+            return RedirectToAction("Categories", new { id = eventId });
+        }
+
+        TempData["Success"] = "Category deleted.";
+        return RedirectToAction("Categories", new { id = eventId });
+    }
 }

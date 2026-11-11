@@ -1,0 +1,62 @@
+@using RaceDay.Web.Models
+@model CategoryForm
+@{
+    var ev = (EventInfo)ViewBag.Event;
+    ViewData["Title"] = "Categories";
+}
+<div class="container py-4">
+    <a asp-action="Events" class="text-decoration-none">&larr; My Events</a>
+    <p class="rd-label mt-3">@ev.Name</p>
+    <h1 class="mb-4">Categories</h1>
+
+    <div class="rd-panel mb-4">
+        <h3>Add a category</h3>
+        <form asp-action="AddCategory" method="post" class="row g-2">
+            <input type="hidden" name="EventId" value="@ev.EventId" />
+            <div class="col-md-5">
+                <input name="CategoryName" class="form-control" placeholder="Category name, like Under 20" aria-label="Category name" required maxlength="100" />
+            </div>
+            <div class="col-md-4">
+                <input name="AgeGroup" class="form-control" placeholder="Age group, like 15-19 (optional)" aria-label="Age group" maxlength="50" />
+            </div>
+            <div class="col-md-3 d-grid"><button type="submit" class="btn btn-rd">Add category</button></div>
+        </form>
+    </div>
+
+    @if (ev.Categories == null || ev.Categories.Count == 0)
+    {
+        <div class="rd-panel text-center"><p class="mb-0">This event has no categories yet. Participants need one to enrol.</p></div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead><tr><th>Category name</th><th>Age group</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var c in ev.Categories)
+                    {
+                        <tr>
+                            <td colspan="2">
+                                <form asp-action="EditCategory" method="post" class="row g-2">
+                                    <input type="hidden" name="CategoryId" value="@c.CategoryId" />
+                                    <input type="hidden" name="EventId" value="@ev.EventId" />
+                                    <div class="col-md-6"><input name="CategoryName" value="@c.CategoryName" class="form-control" aria-label="Category name" required maxlength="100" /></div>
+                                    <div class="col-md-4"><input name="AgeGroup" value="@c.AgeGroup" class="form-control" aria-label="Age group" maxlength="50" /></div>
+                                    <div class="col-md-2 d-grid"><button type="submit" class="btn btn-sm btn-outline-rd">Save</button></div>
+                                </form>
+                            </td>
+                            <td>
+                                <form asp-action="DeleteCategory" method="post"
+                                      onsubmit="return confirm('Delete the category @c.CategoryName?');">
+                                    <input type="hidden" name="categoryId" value="@c.CategoryId" />
+                                    <input type="hidden" name="eventId" value="@ev.EventId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
