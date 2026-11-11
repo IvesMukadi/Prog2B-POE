@@ -1,0 +1,14 @@
+@model string
+@{
+    // Each status gets its own colour
+    var css = Model switch
+    {
+        "Confirmed" => "rd-badge-confirmed",
+        "Pending" => "rd-badge-pending",
+        "Cancelled" => "rd-badge-cancelled",
+        "Completed" => "rd-badge-completed",
+        "Waitlisted" => "rd-badge-waitlisted",
+        _ => "rd-badge-cancelled"
+    };
+}
+<span class="rd-badge @css">@Model</span>

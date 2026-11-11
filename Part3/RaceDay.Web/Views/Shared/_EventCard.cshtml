@@ -1,0 +1,21 @@
+@model RaceDay.Web.Models.EventInfo
+@{
+    var banner = string.IsNullOrEmpty(Model.BannerUrl) ? Url.Content("~/images/event-default.jpg") : Model.BannerUrl;
+}
+<div class="card rd-card">
+    <div class="rd-card-img">
+        <img src="@banner" alt="Banner for @Model.Name" />
+    </div>
+    <div class="card-body">
+        <div class="rd-type">@Model.EventType</div>
+        <h4 class="mb-3">@Model.Name</h4>
+        <div class="row mb-3">
+            <div class="col-6"><small class="text-muted">Distance</small><div class="rd-stat">@Model.Distance.ToString("0.##") km</div></div>
+            <div class="col-6"><small class="text-muted">Date</small><div class="rd-stat">@Model.Date.ToString("dd MMM yyyy")</div></div>
+        </div>
+        <p class="text-muted mb-0">@Model.Location</p>
+    </div>
+    <div class="p-3 pt-0">
+        <a class="btn btn-rd w-100" asp-controller="Home" asp-action="Details" asp-route-id="@Model.EventId">Event details</a>
+    </div>
+</div>

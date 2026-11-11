@@ -1,26 +1,51 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RaceDay.Web.Models;
+using RaceDay.Web.Services;
 
 namespace RaceDay.Web.Controllers;
 
-public class HomeController : Controller
+public class HomeController : BaseController
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ApiClient _api;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ApiClient api)
     {
-        _logger = logger;
+        _api = api;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index(int? type, string? search, DateTime? from)
     {
-        return View();
-    }
+        // Only open events (status 2) are shown on the home page
+        var result = await _api.GetEventsAsync(type, 2);
+        if (result.StatusCode == 0)
+        {
+            return View("ApiDown");
+        }
+        if (!result.Success)
+        {
+            ViewBag.Error = result.Message;
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
+        // Upcoming only, then the name search and date filter
+        var events = (result.Data ?? new List<EventInfo>()).Where(e => e.Date >= DateTime.Now).ToList();
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            events = events.Where(e => e.Name.Contains(search, StringComparison.OrdinalIgnoreCase)
+                                    || e.Location.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (from != null)
+        {
+            events = events.Where(e => e.Date.Date >= from.Value.Date).ToList();
+        }
+
+        // Keep the filter values so the form shows them again
+        ViewBag.Type = type;
+        ViewBag.Search = search;
+        ViewBag.From = from?.ToString("yyyy-MM-dd");
+        ViewBag.Next = events.OrderBy(e => e.Date).FirstOrDefault();
+
+        return View(events.OrderBy(e => e.Date).ToList());
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,11 +1,87 @@
-﻿@{
-    ViewData["Title"] = "Home";
+﻿@using RaceDay.Web.Models
+@model List<EventInfo>
+@{
+    ViewData["Title"] = "Upcoming events";
+    var next = ViewBag.Next as EventInfo;
 }
-@* Placeholder hero, the real home page with events comes later *@
+
 <section class="rd-hero">
     <div class="container">
-        <p class="rd-meta mb-2 rd-rise" style="--i:1">Runs | Walks | Cycles</p>
-        <h1 class="rd-rise" style="--i:2">Find your next race</h1>
-        <p class="lead mb-4 rd-rise" style="--i:3">Sign up, pick your category and track your results.</p>
+        @if (next != null)
+        {
+            <p class="rd-meta mb-2 rd-rise" style="--i:1">@next.Date.ToString("dd MMMM yyyy") | @next.Location</p>
+            <h1 class="rd-rise" style="--i:2">@next.Name</h1>
+            <p class="lead mb-4 rd-rise" style="--i:3">Next up on RaceDay. Pick your category and get on the start line.</p>
+            <a class="btn btn-rd btn-lg rd-rise" style="--i:4" asp-action="Details" asp-route-id="@next.EventId">See the event</a>
+        }
+        else
+        {
+            <p class="rd-meta mb-2 rd-rise" style="--i:1">Runs | Walks | Cycles</p>
+            <h1 class="rd-rise" style="--i:2">Find your next race</h1>
+            <p class="lead mb-4 rd-rise" style="--i:3">New events are added all the time. Check back soon.</p>
+        }
     </div>
+</section>
+
+@if (next != null)
+{
+    <section class="container my-5">
+        <div class="rd-countdown" id="countdown" data-date="@next.Date.ToString("yyyy-MM-ddTHH:mm:ss")">
+            <h3 class="mb-3">Get ready for @next.Name</h3>
+            <div class="rd-count-box"><span class="rd-bib rd-bib-number" id="cd-days">0</span><span class="unit">Days</span></div>
+            <div class="rd-count-box"><span class="rd-bib rd-bib-number" id="cd-hours">0</span><span class="unit">Hours</span></div>
+            <div class="rd-count-box"><span class="rd-bib rd-bib-number" id="cd-minutes">0</span><span class="unit">Minutes</span></div>
+            <div class="rd-count-box"><span class="rd-bib rd-bib-number" id="cd-seconds">0</span><span class="unit">Seconds</span></div>
+        </div>
+    </section>
+}
+
+<section class="container my-5">
+    <p class="rd-label">Upcoming events</p>
+    <h2 class="mb-4">Choose your race. Own your pace.</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search by name or place" aria-label="Search events" />
+        </div>
+        <div class="col-md-3">
+            <select name="type" class="form-select" aria-label="Event type">
+                <option value="">All event types</option>
+                @foreach (var t in Lookups.EventTypes)
+                {
+                    <option value="@t.Key" selected="@(ViewBag.Type == t.Key)">@t.Value</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="from" value="@ViewBag.From" class="form-control" aria-label="Events from this date" />
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-rd">Filter</button>
+        </div>
+    </form>
+
+    @if (Model.Count == 0)
+    {
+        <div class="rd-panel text-center">
+            <h4>No events match</h4>
+            <p class="mb-0">Try a different search or clear the filters. <a asp-action="Index">Show all events</a></p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var ev in Model)
+            {
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <partial name="_EventCard" model="ev" />
+                </div>
+            }
+        </div>
+    }
 </section>
