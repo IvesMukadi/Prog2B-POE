@@ -1,0 +1,70 @@
+@using RaceDay.Web.Models
+@model EventForm
+@{
+    var editing = Model.EventId != 0;
+    ViewData["Title"] = editing ? "Edit event" : "Create event";
+    string? banner = ViewBag.Banner;
+}
+<div class="container py-4" style="max-width: 760px;">
+    <p class="rd-label">Organiser</p>
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+    <div class="rd-panel">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <input type="hidden" asp-for="EventId" />
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Date" class="form-label"></label>
+                    <input asp-for="Date" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Location" class="form-label"></label>
+                    <input asp-for="Location" class="form-control" />
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Distance" class="form-label"></label>
+                    <input asp-for="Distance" class="form-control" />
+                    <span asp-validation-for="Distance" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="EventTypeId" class="form-label"></label>
+                    <select asp-for="EventTypeId" class="form-select" asp-items="@(new SelectList(Lookups.EventTypes, "Key", "Value"))"></select>
+                </div>
+                @if (editing)
+                {
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="EventStatusId" class="form-label"></label>
+                        <select asp-for="EventStatusId" class="form-select" asp-items="@(new SelectList(Lookups.EventStatuses, "Key", "Value"))"></select>
+                    </div>
+                }
+            </div>
+            <div class="mb-3">
+                <label for="banner" class="form-label">Banner image (jpg or png, up to 2 MB)</label>
+                @if (!string.IsNullOrEmpty(banner))
+                {
+                    <div class="mb-2"><img src="@banner" style="max-height: 120px;" alt="Current banner" /></div>
+                }
+                <input type="file" id="banner" name="banner" accept="image/png, image/jpeg" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-rd">@(editing ? "Save changes" : "Create event")</button>
+            <a asp-action="Events" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
