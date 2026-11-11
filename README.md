@@ -59,12 +59,14 @@ POST /api/auth/login - anyone
 POST /api/auth/logout - logged in users
 GET /api/users/me - logged in users
 PUT /api/users/me - logged in users
+POST /api/users/me/picture - logged in users, uploads a profile picture (added in Part 3)
 GET /api/events - anyone (optional filters: type, status, date)
 GET /api/events/{id} - anyone
 GET /api/events/mine - Organiser
 POST /api/events - Organiser
 PUT /api/events/{id} - Organiser (own events only)
 DELETE /api/events/{id} - Organiser (own events only)
+POST /api/events/{id}/banner - Organiser (own events only), uploads a banner image (added in Part 3)
 GET /api/events/{eventId}/categories - anyone
 POST /api/events/{eventId}/categories - Organiser (own events only)
 PUT /api/categories/{id} - Organiser (own events only)
@@ -92,6 +94,10 @@ How to run the API
 
 The sample data is added automatically the first time the API starts.
 
+Image uploads (banner and profile picture) need Blob Storage. For local use, run the Azurite emulator with Docker: docker run -d --name raceday-azurite -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck
+Then save the blob connection string as a user secret: dotnet user-secrets set "Blob:ConnectionString" "UseDevelopmentStorage=true" --project Part2/RaceDay.Api
+For real Azure Blob Storage, use the storage account's connection string instead (it must allow public read access to blobs). Never put it in the repo.
+
 Sample logins (the password for all of them is Password123!)
 thabo@raceday.co.za - Organiser
 priya@raceday.co.za - Organiser
@@ -109,6 +115,7 @@ Differences between the Part 1 endpoint plan and the API
 1. One extra endpoint was added: GET /api/events/mine. It lets an Organiser list the events they created.
 2. The results responses include TotalFinishers, so the web app in Part 3 can show a position like 34th out of 2.
 3. The Part 1 plan listed 3 public endpoints in its summary, but the table has 5 (register, login, list events, event details and event categories). The table is correct.
+4. Two upload endpoints were added in Part 3 for Azure Blob Storage: POST /api/events/{id}/banner and POST /api/users/me/picture. Both accept a jpg or png image up to 2 MB, save it in a public read blob container and store its link in the BANNER_URL or PROFILE_PICTURE_URL column.
 
 CI/CD
 Two GitHub Actions workflows run on every push. Docs check makes sure the ERD, endpoint plan and SQL script are in Part1/docs. Build and test builds the API and runs all the unit tests.
