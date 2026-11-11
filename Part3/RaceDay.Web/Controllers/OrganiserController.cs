@@ -266,4 +266,64 @@ public class OrganiserController : BaseController
         TempData["Success"] = "Status updated.";
         return RedirectToAction("Enrolments", new { id = eventId });
     }
+
+    public async Task<IActionResult> Results(int id)
+    {
+        var ev = await _api.GetEventAsync(id);
+        if (!ev.Success)
+        {
+            return Fail(ev, "Events", "Organiser");
+        }
+
+        var enrolments = await _api.GetEventEnrolmentsAsync(id);
+        if (!enrolments.Success)
+        {
+            return Fail(enrolments, "Events", "Organiser");
+        }
+
+        var results = await _api.GetEventResultsAsync(id);
+        if (!results.Success)
+        {
+            return Fail(results, "Events", "Organiser");
+        }
+
+        // Only people who do not have a result yet (and did not cancel) can be given one
+        var haveResult = results.Data!.Select(r => r.EnrolmentId).ToList();
+        ViewBag.Waiting = enrolments.Data!.Where(e => e.StatusId != 3 && !haveResult.Contains(e.EnrolmentId)).ToList();
+        ViewBag.Event = ev.Data;
+        return View(results.Data!.OrderBy(r => r.FinishingPosition).ToList());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddResult(ResultForm form)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = string.Join(" ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            return RedirectToAction("Results", new { id = form.EventId });
+        }
+
+        // The time must look like 02:05:40
+        if (!TimeSpan.TryParseExact(form.FinishTime, @"hh\:mm\:ss", null, out _))
+        {
+            TempData["Error"] = "Please enter the finish time like 02:05:40.";
+            return RedirectToAction("Results", new { id = form.EventId });
+        }
+
+        var result = await _api.CreateResultAsync(form.EventId, form.EnrolmentId, form.FinishTime, form.FinishingPosition);
+        if (!result.Success)
+        {
+            // For example "Results can only be added to completed events."
+            if (IsSessionOrServerProblem(result))
+            {
+                return Fail(result, "Events", "Organiser");
+            }
+            TempData["Error"] = result.Message;
+            return RedirectToAction("Results", new { id = form.EventId });
+        }
+
+        TempData["Success"] = "Result published.";
+        return RedirectToAction("Results", new { id = form.EventId });
+    }
 }

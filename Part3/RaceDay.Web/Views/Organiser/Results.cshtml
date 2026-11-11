@@ -1,0 +1,66 @@
+@using RaceDay.Web.Models
+@model List<ResultInfo>
+@{
+    var ev = (EventInfo)ViewBag.Event;
+    var waiting = (List<EnrolmentInfo>)ViewBag.Waiting;
+    ViewData["Title"] = "Results";
+}
+<div class="container py-4">
+    <a asp-action="Events" class="text-decoration-none">&larr; My Events</a>
+    <p class="rd-label mt-3">@ev.Name</p>
+    <h1 class="mb-4">Results</h1>
+
+    @if (ev.EventStatusId != 4)
+    {
+        <div class="alert alert-warning">Results can only be added once the event is marked as Completed. <a asp-action="EditEvent" asp-route-id="@ev.EventId">Change the status</a>.</div>
+    }
+    else if (waiting.Count > 0)
+    {
+        <div class="rd-panel mb-4">
+            <h3>Add a result</h3>
+            <form asp-action="AddResult" method="post" class="row g-2">
+                <input type="hidden" name="EventId" value="@ev.EventId" />
+                <div class="col-md-4">
+                    <select name="EnrolmentId" class="form-select" aria-label="Participant">
+                        <option value="0">Choose a participant</option>
+                        @foreach (var e in waiting)
+                        {
+                            <option value="@e.EnrolmentId">@e.ParticipantName (@e.CategoryName)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3"><input name="FinishTime" class="form-control" placeholder="Finish time, 02:05:40" aria-label="Finish time" /></div>
+                <div class="col-md-3"><input name="FinishingPosition" type="number" min="1" class="form-control" placeholder="Position" aria-label="Finishing position" /></div>
+                <div class="col-md-2 d-grid"><button type="submit" class="btn btn-rd">Publish</button></div>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">Everyone enrolled already has a result.</div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <div class="rd-panel text-center"><p class="mb-0">No results published yet.</p></div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead><tr><th>Position</th><th>Participant</th><th>Category</th><th>Finish time</th></tr></thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td><strong>@Lookups.Ordinal(r.FinishingPosition)</strong></td>
+                            <td>@r.ParticipantName</td>
+                            <td>@r.CategoryName</td>
+                            <td>@r.FinishTime.ToString(@"hh\:mm\:ss")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
