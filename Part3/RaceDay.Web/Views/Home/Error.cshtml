@@ -1,0 +1,17 @@
+@{
+    var notFound = Context.Response.StatusCode == 404;
+    ViewData["Title"] = notFound ? "Page not found" : "Something went wrong";
+}
+<div class="container py-5 text-center">
+    @if (notFound)
+    {
+        <h1>Page not found</h1>
+        <p class="lead">We could not find that page. Check the address or head back to the events.</p>
+    }
+    else
+    {
+        <h1>Something went wrong</h1>
+        <p class="lead">Sorry, that did not work. Please go back and try again.</p>
+    }
+    <a class="btn btn-rd" asp-controller="Home" asp-action="Index">Back to home</a>
+</div>

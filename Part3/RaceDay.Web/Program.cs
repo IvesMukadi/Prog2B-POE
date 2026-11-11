@@ -32,6 +32,9 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 
+// Unknown addresses show the friendly error page too
+app.UseStatusCodePagesWithReExecute("/Home/Error");
+
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
