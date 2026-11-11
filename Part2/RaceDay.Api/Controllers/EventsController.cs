@@ -5,6 +5,7 @@ using RaceDay.Api.Data;
 using RaceDay.Api.Dtos;
 using RaceDay.Api.Helpers;
 using RaceDay.Api.Models;
+using RaceDay.Api.Services;
 
 namespace RaceDay.Api.Controllers;
 
@@ -13,10 +14,12 @@ namespace RaceDay.Api.Controllers;
 public class EventsController : ControllerBase
 {
     private readonly RaceDayContext _context;
+    private readonly IBlobService _blob;
 
-    public EventsController(RaceDayContext context)
+    public EventsController(RaceDayContext context, IBlobService blob)
     {
         _context = context;
+        _blob = blob;
     }
 
     // Events with their type, status and organiser loaded
@@ -155,6 +158,44 @@ public class EventsController : ControllerBase
         ev.Distance = dto.Distance;
         ev.TypeId = dto.EventTypeId;
         ev.EventStatusId = dto.EventStatusId;
+        await _context.SaveChangesAsync();
+
+        var updated = await EventsWithDetails().FirstAsync(e => e.EventId == id);
+        return EventDto.FromEvent(updated);
+    }
+
+    /// <summary>Uploads a banner image for an event (only the organiser who created it).</summary>
+    [HttpPost("{id:int}/banner")]
+    [Authorize(Roles = "Organiser")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EventDto>> UploadBanner(int id, IFormFile? file)
+    {
+        var ev = await _context.Events.FindAsync(id);
+        if (ev == null)
+        {
+            return NotFound();
+        }
+
+        // An organiser can only change their own events
+        if (ev.UserId != User.GetUserId())
+        {
+            return Forbid();
+        }
+
+        var error = ImageCheck.GetError(file);
+        if (error != null)
+        {
+            return BadRequest(error);
+        }
+
+        // A random name stops one upload replacing another
+        var fileName = $"event-{id}-{Guid.NewGuid()}{Path.GetExtension(file!.FileName).ToLower()}";
+        using var stream = file.OpenReadStream();
+        ev.BannerUrl = await _blob.UploadAsync(stream, "banners", fileName, file.ContentType);
         await _context.SaveChangesAsync();
 
         var updated = await EventsWithDetails().FirstAsync(e => e.EventId == id);
