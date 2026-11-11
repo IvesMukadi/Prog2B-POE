@@ -2,11 +2,15 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using RaceDay.Api.Data;
+using RaceDay.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<RaceDayContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RaceDay")));
+
+// Uploads go to Azure Blob Storage through this service
+builder.Services.AddScoped<IBlobService, BlobService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
