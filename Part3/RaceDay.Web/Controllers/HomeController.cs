@@ -48,6 +48,16 @@ public class HomeController : BaseController
         return View(events.OrderBy(e => e.Date).ToList());
     }
 
+    public async Task<IActionResult> Details(int id)
+    {
+        var result = await _api.GetEventAsync(id);
+        if (!result.Success)
+        {
+            return Fail(result, "Index", "Home");
+        }
+        return View(result.Data);
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
