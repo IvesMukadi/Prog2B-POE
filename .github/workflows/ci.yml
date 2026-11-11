@@ -18,8 +18,11 @@ jobs:
       - name: Restore packages
         run: dotnet restore Part2/RaceDay.sln
 
-      - name: Build
+      - name: Build the API and the MVC app
         run: dotnet build Part2/RaceDay.sln --no-restore --configuration Release
 
       - name: Run unit tests
         run: dotnet test Part2/RaceDay.sln --no-build --configuration Release
+
+      - name: Build the Docker image for the MVC app
+        run: docker build -t raceday-web Part3/RaceDay.Web
