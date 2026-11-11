@@ -25,16 +25,16 @@
     {
         <div class="table-responsive">
             <table class="table align-middle">
-                <thead><tr><th>Event</th><th>Date</th><th>Status</th><th>Enrolments</th><th></th></tr></thead>
+                <thead><tr><th>Event</th><th>Date</th><th class="d-none d-md-table-cell">Status</th><th>Enrolled</th><th></th></tr></thead>
                 <tbody>
                     @foreach (var e in Model)
                     {
                         <tr>
-                            <td>@e.Name</td>
-                            <td>@e.Date.ToString("dd MMM yyyy")</td>
-                            <td>@e.EventStatus</td>
+                            <td>@e.Name<div class="small text-muted d-md-none">@e.EventStatus</div></td>
+                            <td class="text-nowrap">@e.Date.ToString("dd MMM yyyy")</td>
+                            <td class="d-none d-md-table-cell">@e.EventStatus</td>
                             <td>@counts[e.EventId]</td>
-                            <td><a asp-action="Enrolments" asp-route-id="@e.EventId">View enrolments</a></td>
+                            <td><a asp-action="Enrolments" asp-route-id="@e.EventId">View<span class="d-none d-md-inline"> enrolments</span></a></td>
                         </tr>
                     }
                 </tbody>

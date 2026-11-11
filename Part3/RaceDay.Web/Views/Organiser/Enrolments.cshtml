@@ -17,16 +17,16 @@
     {
         <div class="table-responsive">
             <table class="table align-middle">
-                <thead><tr><th>Participant</th><th>Category</th><th>Status</th><th>Change status</th></tr></thead>
+                <thead><tr><th>Participant</th><th class="d-none d-md-table-cell">Category</th><th>Status</th><th>Change status</th></tr></thead>
                 <tbody>
                     @foreach (var e in Model)
                     {
                         <tr>
-                            <td>@e.ParticipantName</td>
-                            <td>@e.CategoryName</td>
+                            <td>@e.ParticipantName<div class="small text-muted d-md-none">@e.CategoryName</div></td>
+                            <td class="d-none d-md-table-cell">@e.CategoryName</td>
                             <td><partial name="_StatusBadge" model="e.StatusName" /></td>
                             <td>
-                                <form asp-action="ChangeStatus" method="post" class="d-flex gap-2">
+                                <form asp-action="ChangeStatus" method="post" class="d-flex flex-wrap gap-2">
                                     <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
                                     <input type="hidden" name="eventId" value="@ev.EventId" />
                                     <select name="statusId" class="form-select form-select-sm" aria-label="New status" asp-items="@(new SelectList(Lookups.EnrolmentStatuses, "Key", "Value", e.StatusId))"></select>

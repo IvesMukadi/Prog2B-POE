@@ -3,8 +3,8 @@
 :root {
     --navy: #0f1b33;
     --navy-light: #1b2c4f;
-    --orange: #d9480f;
-    --orange-dark: #b53a0a;
+    --orange: #c2410c;
+    --orange-dark: #9a3412;
     --cream: #fff7e6;
     --paper: #fffdf8;
     --yellow: #ffd166;
@@ -219,6 +219,7 @@ h1, h2, h3, h4, .rd-heading {
 /* ---------- Enrolment status badges (a dot as well as a colour) ---------- */
 
 .rd-badge {
+    white-space: nowrap;
     display: inline-block;
     padding: 0.3rem 0.75rem;
     font-weight: 600;

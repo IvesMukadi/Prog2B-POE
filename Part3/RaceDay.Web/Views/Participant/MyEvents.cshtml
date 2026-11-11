@@ -17,16 +17,16 @@
     {
         <div class="table-responsive">
             <table class="table align-middle">
-                <thead><tr><th>Event</th><th>Date</th><th>Category</th><th>Status</th><th></th></tr></thead>
+                <thead><tr><th>Event</th><th>Date</th><th class="d-none d-md-table-cell">Category</th><th>Status</th><th></th></tr></thead>
                 <tbody>
                     @foreach (var e in Model)
                     {
                         <tr>
-                            <td>@e.EventName</td>
-                            <td>@e.EventDate.ToString("dd MMM yyyy")</td>
-                            <td>@e.CategoryName</td>
+                            <td>@e.EventName<div class="small text-muted d-md-none">@e.CategoryName</div></td>
+                            <td class="text-nowrap">@e.EventDate.ToString("dd MMM yyyy")</td>
+                            <td class="d-none d-md-table-cell">@e.CategoryName</td>
                             <td><partial name="_StatusBadge" model="e.StatusName" /></td>
-                            <td><a asp-controller="Home" asp-action="Details" asp-route-id="@e.EventId">View event</a></td>
+                            <td><a asp-controller="Home" asp-action="Details" asp-route-id="@e.EventId">View<span class="d-none d-md-inline"> event</span></a></td>
                         </tr>
                     }
                 </tbody>
